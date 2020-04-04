@@ -1,8 +1,12 @@
 {
-  "name": "inventory-item-manager",
+  "name": "roll20-inventory-and-api-enhancer",
   "version": "1.0.0",
-  "description": "Managing inventory and items in Roll20",
-  "main": "magic-item-loader.js",
+  "description": "A D&D 5E centred API script for Roll20, which enables custom item and inventory management in a more integrated way. It also adds a number of API script enhancements in the form of additional tables, imports, and item creation APIs.",
+  "main": "./build/main.js",
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:alexmdodge/roll20-inventory-and-api-enhancer.git"
+  },
   "scripts": {
     "test": "jest",
     "test:html": "npx ts-node --project __html__/tsconfig.json __html__/render.ts && http-server ./public",
@@ -11,7 +15,7 @@
     "build:copy": "cat ./build/main.js | pbcopy",
     "lint": "eslint . --ext .ts"
   },
-  "author": "Alex Dodge",
+  "author": "Alex Dodge, alex.mdodge@gmail.com",
   "license": "MIT",
   "devDependencies": {
     "@types/jest": "^25.1.4",
@@ -20,7 +24,6 @@
     "@typescript-eslint/parser": "^2.25.0",
     "clean-webpack-plugin": "^3.0.0",
     "eslint": "^6.8.0",
-    "http-server": "^0.12.1",
     "jest": "^25.1.0",
     "script-loader": "^0.7.2",
     "ts-jest": "^25.2.1",
