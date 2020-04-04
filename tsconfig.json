@@ -1,0 +1,21 @@
+
+{
+  "compilerOptions": {
+    "noImplicitAny": false,
+    "target": "es6",
+    "module": "CommonJS",
+    "typeRoots": [
+      "node_modules/@types"
+    ],
+    "types": [ "node", "jest" ]
+  },
+  "include": [
+      "src/**/*",
+      "__tests__/**/*",
+  ],
+  "exclude": [
+    "node_modules",
+    "build",
+    "dist"
+  ]
+}

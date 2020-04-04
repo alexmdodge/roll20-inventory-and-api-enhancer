@@ -1,0 +1,24 @@
+
+
+{
+  "compilerOptions": {
+    "noImplicitAny": false,
+    "target": "es6",
+    "module": "CommonJS",
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "baseUrl": ".",
+    "typeRoots": [
+      "node_modules/@types"
+    ],
+    "types": [ "node"]
+  },
+  "include": [
+      "render.ts"
+  ],
+  "exclude": [
+    "../node_modules",
+    "../build",
+    "../dist"
+  ]
+}

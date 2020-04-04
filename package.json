@@ -1,0 +1,33 @@
+{
+  "name": "inventory-item-manager",
+  "version": "1.0.0",
+  "description": "Managing inventory and items in Roll20",
+  "main": "magic-item-loader.js",
+  "scripts": {
+    "test": "jest",
+    "test:html": "npx ts-node --project __html__/tsconfig.json __html__/render.ts && http-server ./public",
+    "build": "webpack && npm run build:copy",
+    "build:watch": "webpack --watch",
+    "build:copy": "cat ./build/main.js | pbcopy",
+    "lint": "eslint . --ext .ts"
+  },
+  "author": "Alex Dodge",
+  "license": "MIT",
+  "devDependencies": {
+    "@types/jest": "^25.1.4",
+    "@types/node": "^13.9.1",
+    "@typescript-eslint/eslint-plugin": "^2.25.0",
+    "@typescript-eslint/parser": "^2.25.0",
+    "clean-webpack-plugin": "^3.0.0",
+    "eslint": "^6.8.0",
+    "http-server": "^0.12.1",
+    "jest": "^25.1.0",
+    "script-loader": "^0.7.2",
+    "ts-jest": "^25.2.1",
+    "ts-loader": "^6.2.1",
+    "ts-node": "^8.6.2",
+    "typescript": "^3.8.3",
+    "webpack": "^4.42.0",
+    "webpack-cli": "^3.3.11"
+  }
+}
