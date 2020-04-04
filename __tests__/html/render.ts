@@ -1,14 +1,14 @@
 import {
   InventoryTemplate,
   ItemTemplate
-} from '../src/templates'
+} from '../../src/templates'
 import {
   TestItems
-} from '../src/items'
+} from '../../src/items'
 import fs from 'fs'
 import path from 'path'
-import { Roll20Object, IIMInventoryMetadata } from '../src/types'
-import { IIM_INVENTORY_IDENTIFIER, IIM_ITEM_IDENTIFIER } from '../src/constants'
+import { Roll20Object, IIMInventoryMetadata } from '../../src/types'
+import { IIM_INVENTORY_IDENTIFIER, IIM_ITEM_IDENTIFIER } from '../../src/constants'
 
 const mockHandout: Roll20Object = {
   id: 'mock-handout-id',
