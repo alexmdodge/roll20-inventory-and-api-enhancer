@@ -34,12 +34,12 @@ export interface Roll20Message {
 
 export interface Roll20Object {
   id: string;
-  get(attributeName: 'notes' | 'gmnotes' | 'bio', cb: (attributeValue: string) => void);
-  get(attributeName: string): AttributeValue;
-  get(attributeName: 'displayname'): string;
-  get(attributeName: 'name'): string;
-  set(attributeName: string, value: AttributeValue);
-  remove();
+  get(property: 'notes' | 'gmnotes' | 'bio', cb: (value: string) => void);
+  get(property: string): AttributeValue;
+  get(property: 'displayname'): string;
+  get(property: 'name'): string;
+  set(property: string, value: AttributeValue);
+  remove(options: any);
 }
 
 export interface Roll20ObjectAttributes {

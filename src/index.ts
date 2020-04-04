@@ -1,7 +1,6 @@
 import { Roll20Message } from './types'
 import { parseChatMessage } from './helpers'
 import {
-  clearAllItems,
   reportUnknownCommandToPlayer,
   loadAllItems,
   updateAllItems,
@@ -37,10 +36,6 @@ function detectCommand(message: Roll20Message) {
   switch(command.trigger) {
     case 'load-all-items':
       loadAllItems(context)
-      break
-
-    case 'clear-all-items':
-      clearAllItems(context)
       break
 
     case 'update-all-items':
