@@ -1,42 +1,8 @@
-import { Roll20Object, IIMContext, IIMItem, IIMItemMetadata, Roll20ObjectType } from '../types'
-import { whisperToPlayer, parseItem, getItemDataById, getItemById } from '../helpers'
+import { IIMContext, IIMItemMetadata } from '../types'
+import { whisperToPlayer, getItemDataById, getItemById, getCommandTextAfter } from '../helpers'
 import { ItemTemplate } from '../templates'
 import { IIM_ITEM_IDENTIFIER } from '../constants'
 import { isUrl } from '../utils'
-
-function getAllItems(player: Roll20Object): Promise<{ handout: Roll20Object; itemData: IIMItem }[]> {
-  const allHandouts = findObjs({
-    type: Roll20ObjectType.Handout
-  })
-
-  const processingHandouts = allHandouts.map(handout => {
-    return new Promise<{ handout: Roll20Object; itemData: IIMItem } | null>(resolve => {
-      handout.get('gmnotes', metadata => {
-        if (metadata.indexOf(IIM_ITEM_IDENTIFIER) === -1) {
-          resolve(null)
-          return
-        }
-
-        const itemMetadata = parseItem(metadata)
-
-        // In the future perform any updates or transformations here
-        if (!itemMetadata) {
-          whisperToPlayer(player, `Error parsing data for item: ${handout.get('name')}`)
-          resolve(null)
-          return
-        }
-
-        resolve({
-          itemData: itemMetadata.item,
-          handout: handout
-        })
-      })
-    })
-  })
-
-  return Promise.all(processingHandouts)
-    .then(items => items.filter(item => item !== null))
-}
 
 function updateItem(context: IIMContext) {
   const { command, player } = context
@@ -80,13 +46,12 @@ function updateItemImage(context: IIMContext) {
   const { command, player } = context
   const commandOptions = command.options
 
-  const data = commandOptions.split(/\s/g)
-  const itemId = data[0].trim()
-  const itemImageUrl = data[1].trim()
+  const [ itemId ] = commandOptions.split(/\s/g)
+  let itemImageUrl: string | null = getCommandTextAfter(itemId, commandOptions)
 
   if (!isUrl(itemImageUrl)) {
-    whisperToPlayer(player, 'Image URL is invalid, skipping update.')
-    return
+    whisperToPlayer(player, 'Image URL is invalid, setting as empty.')
+    itemImageUrl = null
   }
 
   const itemHandout = getItemById(itemId)
@@ -127,7 +92,7 @@ function updateItemDescription(context: IIMContext) {
 
   const data = commandOptions.split(/\s/g, 1)
   const itemId = data[0].trim()
-  const itemDescription = commandOptions.slice(itemId.length + 1)
+  const itemDescription = getCommandTextAfter(itemId, commandOptions)
 
   if (!playerIsGM(player.id)) {
     whisperToPlayer(player, 'You must be the GM to update the description.')
@@ -155,7 +120,7 @@ function updateItemDescription(context: IIMContext) {
 
     const prevDesc = updatedItemMetadata.item.description
     const isDescriptionEmpty = prevDesc.length < 1
-    const textDivider = isDescriptionEmpty ? '' : '<br><br>'
+    const textDivider = isDescriptionEmpty ? '' : '<br>'
     updatedItemMetadata.item.description = `${prevDesc}${textDivider}${itemDescription}`
 
     // Ensure we don't get any stack errors

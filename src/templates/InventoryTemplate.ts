@@ -12,7 +12,7 @@ import { UpdateInventoryItemTemplate, DeleteInventoryItemTemplate } from './butt
 import { handoutLink } from '../helpers'
 
 const renderActionsCell = (inventoryHandoutId: string | null, itemMeta: IIMInvItemMetadata): string => {
-  const { handoutId: itemHandoutId, amount } = itemMeta
+  const { handoutId: itemHandoutId, amount, item } = itemMeta
   if (!inventoryHandoutId || !itemHandoutId) {
     return `<td style="${centerText}">---</td>`
   }
@@ -20,7 +20,7 @@ const renderActionsCell = (inventoryHandoutId: string | null, itemMeta: IIMInvIt
   return [
     `<td style="position:relative;${centerText}">`,
     UpdateInventoryItemTemplate(inventoryHandoutId, itemHandoutId, ButtonSize.Small),
-    amount === '0' ? DeleteInventoryItemTemplate(inventoryHandoutId, itemHandoutId, ButtonSize.Small) : '',
+    amount === '0' ? DeleteInventoryItemTemplate(inventoryHandoutId, item.name, ButtonSize.Small) : '',
     '</td>'
   ].join('')
 }

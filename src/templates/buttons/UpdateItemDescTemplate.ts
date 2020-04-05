@@ -7,5 +7,5 @@ export const UpdateItemDescTemplate = (itemHandoutId: string, size: ButtonSize) 
   href="${updateItemDescCommandTemplate(itemHandoutId)}"
   style="${buttonStyles}${getButtonSizeStyles(size)}"
 >
-  Change Description
+  Add Description
 </a>`

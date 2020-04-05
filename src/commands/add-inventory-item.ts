@@ -1,6 +1,5 @@
 import { IIM_INVENTORY_IDENTIFIER } from '../constants'
 import {
-  Roll20Object,
   IIMContext,
   IIMInventoryMetadata,
   IIMItemMetadata,
@@ -15,7 +14,8 @@ import {
   parseInventory,
   getItemDataById,
   sayAsPlayer,
-  handoutLink
+  handoutLink,
+  getCommandTextAfter
 } from '../helpers'
 import { InventoryTemplate } from '../templates'
 
@@ -29,7 +29,12 @@ function updateInventoryWithItem(
   let itemExists = false
 
   newInventory = newInventory.map(currentItemMeta => {
-    if (currentItemMeta.item.name === itemMeta.item.name) {
+    const isSameName = currentItemMeta.item.name === itemMeta.item.name
+
+    // Loosen checking here simply to name, which allows multiple items
+    // to exist in the table with the same name in case new names are
+    // assigned and items need to be switched over
+    if (isSameName) {
       itemExists = true
       const currentAmount = parseInt(currentItemMeta.amount, 10)
       const newAmount = parseInt(itemAmount, 10)
@@ -238,7 +243,7 @@ function deleteInventoryItem(context: IIMContext) {
 
   const data = commandOptions.split(/\s/g)
   const inventoryHandoutId = data[0].trim()
-  const itemHandoutId = data[1].trim()
+  const itemName = getCommandTextAfter(inventoryHandoutId, commandOptions)
 
   const inventory = getInventoryById(inventoryHandoutId)
   
@@ -261,15 +266,10 @@ function deleteInventoryItem(context: IIMContext) {
       whisperToPlayer(player, 'Error while retrieving inventory, no items are present, inventory may be corrupted')
     }
 
-    let itemToRemove = 'Unknown'
     const newInventoryItems = currentInventoryItems.filter(itemMeta => {
-      if (itemMeta.handoutId === itemHandoutId) {
-        itemToRemove = itemMeta.item.name
-        return false
-      } else {
-        return true
-      }
+      return itemMeta.item.name !== itemName
     })
+
     currentInventoryMetadata.inventory = newInventoryItems
 
     setTimeout(() => {
@@ -277,7 +277,7 @@ function deleteInventoryItem(context: IIMContext) {
       inventory.set('gmnotes', JSON.stringify(currentInventoryMetadata, null, 2))
       
       const inventoryHandoutLink = `<b><a href="${handoutLink(inventory.id)}">${inventory.get('name')}</a></b>`
-      const itemHandoutLink = `<a style="color:darkgreen;" href="${handoutLink(itemHandoutId)}">${itemToRemove}</a>`
+      const itemHandoutLink = `<span style="color:darkgreen;font-weight:bold">${itemName}</span>`
       const itemNameStyled = `<span style="font-weight:bold;">${itemHandoutLink}</span>`
 
       sayAsPlayer(player, `${itemNameStyled} was cleared from ${inventoryHandoutLink}`)
@@ -308,12 +308,12 @@ function updateInventoryItemCommandTemplate(inventoryHandoutId: string, itemHand
   ].join(' ')
 }
 
-function deleteInventoryItemCommandTemplate(inventoryHandoutId: string, itemHandoutId: string): string {
+function deleteInventoryItemCommandTemplate(inventoryHandoutId: string, itemName: string): string {
   return [
     '!iim',
     'delete-inventory-item',
     inventoryHandoutId,
-    itemHandoutId
+    itemName
   ].join(' ')
 }
 

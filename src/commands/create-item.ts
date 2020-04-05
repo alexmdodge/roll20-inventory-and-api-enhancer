@@ -38,7 +38,7 @@ function createDefaultItem(player: Roll20Object, name: string) {
     properties: '',
     attunement: 'unknown',
     weight: '- lb.',
-    imageUrl: 'https://s3.amazonaws.com/files.d20.io/images/106191355/rk01dcnscbT8LgUXYuHqbA/max.jpg?1583008980',
+    imageUrl: null,
     price: '- gp',
     description: ''
   })

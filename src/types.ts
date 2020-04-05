@@ -39,7 +39,7 @@ export interface Roll20Object {
   get(property: 'displayname'): string;
   get(property: 'name'): string;
   set(property: string, value: AttributeValue);
-  remove(options: any);
+  remove(options?: any);
 }
 
 export interface Roll20ObjectAttributes {
@@ -84,7 +84,7 @@ export interface IIMItem {
   properties: string;
   attunement: string;
   weight: string;
-  imageUrl: string;
+  imageUrl?: string | null;
   price: string;
   description: string;
 }

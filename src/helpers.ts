@@ -170,7 +170,6 @@ export function mapItemTypeToImage(nameStr: string, typeStr: string) {
     'ammunition': 'https://media-waterdeep.cursecdn.com/attachments/2/664/weapon.jpg',
     'amulet': 'https://media-waterdeep.cursecdn.com/attachments/2/668/ring.jpg',
     'ring': 'https://media-waterdeep.cursecdn.com/attachments/2/668/ring.jpg',
-    'adventuring': 'https://s3.amazonaws.com/files.d20.io/images/106191355/rk01dcnscbT8LgUXYuHqbA/max.jpg?1583008980',
     'poison': 'https://media-waterdeep.cursecdn.com/attachments/2/667/potion.jpg',
     'flask': 'https://media-waterdeep.cursecdn.com/attachments/2/667/potion.jpg',
     'vial': 'https://media-waterdeep.cursecdn.com/attachments/2/667/potion.jpg',
@@ -188,7 +187,7 @@ export function mapItemTypeToImage(nameStr: string, typeStr: string) {
     'wondrous': 'https://media-waterdeep.cursecdn.com/attachments/2/665/wondrousitem.jpg'
   }
 
-  let imageUrl = 'https://s3.amazonaws.com/files.d20.io/images/106191355/rk01dcnscbT8LgUXYuHqbA/max.jpg?1583008980'
+  let imageUrl = null
 
   Object.keys(potentialTypesMap).forEach(potentialType => {
     if (itemType.indexOf(potentialType) > -1) {
@@ -221,4 +220,13 @@ export function getItemDataById(id: string): Promise<IIMItemMetadata | null> {
       resolve(itemMetadata)
     })
   })
+}
+
+/**
+ * Assuming a pattern that a space will always follow whatever
+ * text is provided, then it will return the remaining text in
+ * a provided command.
+ */
+export function getCommandTextAfter(matcher: string, command: string): string {
+  return command.slice(command.indexOf(matcher) + matcher.length + 1)
 }

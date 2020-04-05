@@ -24,7 +24,7 @@ const ItemTemplate = (itemMeta: IIMItemMetadata): string => {
   return [
     // Item header with image banner
     `<div class="iim__handout-container" style="${containerStyles}">`,
-    `<img style="${itemImageStyles}" src="${item.imageUrl}">`,
+    `${!item.imageUrl ? '' : `<img style="${itemImageStyles}" src="${item.imageUrl}">`}`,
     `<h1>${item.name}</h1>`,
 
     // Initial section for rarity and type info
