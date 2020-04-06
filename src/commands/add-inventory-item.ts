@@ -61,7 +61,12 @@ function updateInventoryWithItem(
       amount: itemAmount,
       item: {
         ...itemMeta.item,
-        ...itemWithPrice
+        ...itemWithPrice,
+
+        // Need to override description to prevent rendering errors in the future
+        // and description isn't metadata that's needed and can always be
+        // retrieved
+        description: ''
       }
     }
     newInventory.push(newItem)
@@ -130,7 +135,7 @@ function addInventoryItem(context: IIMContext) {
       }
 
       // Only allow the GM to override price display settings
-      let gmPriceOverride: string | undefined = undefined
+      let gmPriceOverride = '---'
 
       if (isPlayerGm) {
         gmPriceOverride = isPriceShowing ? itemMetadata.item.price : '---'

@@ -5,11 +5,21 @@ import {
   containerStyles,
   inventoryHeaderImgStyles,
   inventoryItemApiStyles,
-  centerText
+  centerText,
+  apiControlStyles
 } from './styles'
 import { INVENTORY_HEADER_IMG } from '../constants'
 import { UpdateInventoryItemTemplate, DeleteInventoryItemTemplate } from './buttons'
 import { handoutLink } from '../helpers'
+import { UpdateInventoryTemplate } from './buttons/UpdateInventoryTemplate'
+
+const InventoryApiControls = (inventoryMeta: IIMInventoryMetadata) => {
+  return [
+    `<div style="${apiControlStyles}">`,
+    UpdateInventoryTemplate(inventoryMeta.handoutId, ButtonSize.Medium),
+    '</div>'
+  ].join('')
+}
 
 const renderActionsCell = (inventoryHandoutId: string | null, itemMeta: IIMInvItemMetadata): string => {
   const { handoutId: itemHandoutId, amount, item } = itemMeta
@@ -87,6 +97,7 @@ const TableBodyTemplate = (inventoryMeta: IIMInventoryMetadata) => [
 export const InventoryTemplate = (inventoryMeta: IIMInventoryMetadata): string => [
   `<div class="iim__inventory-container" style="${containerStyles}">`,
   `<img style="${inventoryHeaderImgStyles}" src="${INVENTORY_HEADER_IMG}">`,
+  InventoryApiControls(inventoryMeta),
   '<table>',
   TableHeaderTemplate(),
   TableBodyTemplate(inventoryMeta),

@@ -11,7 +11,8 @@ import {
   deleteInventoryItem,
   updateItem,
   updateItemImage,
-  updateItemDescription
+  updateItemDescription,
+  updateInventory
 } from './commands/index'
 import { createInventory } from './commands/create-inventory'
 
@@ -64,6 +65,10 @@ function detectCommand(message: Roll20Message) {
 
     case 'create-inventory':
       createInventory(context)
+      break
+
+    case 'update-inventory':
+      updateInventory(context)
       break
 
     case 'add-inventory-item':

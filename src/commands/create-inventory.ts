@@ -4,7 +4,6 @@ import {
   Roll20Object,
   IIMContext,
   IIMInventoryMetadata,
-  IIMItemMetadata,
   IIMInvItemMetadata
 } from '../types'
 import { whisperToPlayer, getCharacterByName, getInventoryByCharacter } from '../helpers'
@@ -31,7 +30,7 @@ function createNewInventory(player: Roll20Object, character: Roll20Object) {
         weight: '---',
         imageUrl: '---',
         price: '---',
-        description: '---'
+        description: ''
       }
     }
   ]

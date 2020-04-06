@@ -222,6 +222,36 @@ export function getItemDataById(id: string): Promise<IIMItemMetadata | null> {
   })
 }
 
+export type InventoryDataResult = {
+  meta: IIMInventoryMetadata;
+  handout: Roll20Object;
+}
+
+export function getInventoryDataById(id: string): Promise<InventoryDataResult | null> {
+  return new Promise(resolve => {
+    const inventory = getInventoryById(id)
+
+    if (!inventory) {
+      resolve(null)
+      return
+    }
+
+    inventory.get('gmnotes', data => {
+      const inventoryMetadata = parseInventory(data)
+
+      if (!inventoryMetadata) {
+        resolve(null)
+        return
+      }
+
+      resolve({
+        meta: inventoryMetadata,
+        handout: inventory
+      })
+    })
+  })
+}
+
 /**
  * Assuming a pattern that a space will always follow whatever
  * text is provided, then it will return the remaining text in
