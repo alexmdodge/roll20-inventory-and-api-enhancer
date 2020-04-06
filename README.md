@@ -20,6 +20,8 @@ If you would like to contribute to the project please refer to the contributor d
 ## Roadmap
 
 - [ ] All inventories to be updated so template changes in future versions can be applied
+- [ ] Add inventory help menu which can be toggled to display help text
+- [ ] Add icons to inventory and item buttons to make intention clearer
 - [ ] Ensure that items are removed by name and inventory ID, otherwise repeats can sometimes be inserted by the same ID
 - [ ] Generate a master API command page where updates, items, and inventories can be made
 - [ ] Provide filter of inventories by weight, price, and name
