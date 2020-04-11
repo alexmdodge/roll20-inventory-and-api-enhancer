@@ -1,31 +1,28 @@
+import '../../__tests__/mocks/index'
+
 import {
-  InventoryTemplate,
-  ItemTemplate
+  InventoryTemplate
 } from '../../src/templates'
 import {
   TestItems
 } from '../../src/items'
 import fs from 'fs'
 import path from 'path'
-import { Roll20Object, IIMInventoryMetadata } from '../../src/types'
+import { IIMInventoryMetadata } from '../../src/types'
 import { IIM_INVENTORY_IDENTIFIER, IIM_ITEM_IDENTIFIER } from '../../src/constants'
-
-const mockHandout: Roll20Object = {
-  id: 'mock-handout-id',
-  get() {
-    return 'mock-get-value'
-  },
-  set() {
-    //
-  },
-  remove() {
-    //
-  }
-}
 
 const mockInventory: IIMInventoryMetadata = {
   id: IIM_INVENTORY_IDENTIFIER,
+  characterId: '',
   handoutId: null,
+  totalWealth: {
+    copper: '123',
+    silver: '50',
+    gold: '60',
+    electrum: '23',
+    platinum: '1'
+  },
+  totalWeight: '200',
   inventory: [
     {
       id: IIM_ITEM_IDENTIFIER,
@@ -42,7 +39,7 @@ const mockInventory: IIMInventoryMetadata = {
   ]
 }
 
-const testFilePath = path.resolve(__dirname, '../public/index.html')
+const testFilePath = path.resolve(__dirname, '../index.html')
 fs.writeFileSync(testFilePath, `
 <!DOCTYPE html>
 <html lang="en">
@@ -69,7 +66,6 @@ fs.writeFileSync(testFilePath, `
 </head>
 <body class="container">
   ${InventoryTemplate(mockInventory)}
-  ${TestItems.map(item => ItemTemplate(item, mockHandout)).join('')}
 </body>
 </html>
 `)

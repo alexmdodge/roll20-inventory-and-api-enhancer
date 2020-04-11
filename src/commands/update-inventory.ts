@@ -3,7 +3,7 @@ import {
   IIMContext,
   IIMInventoryMetadata
 } from '../types'
-import { whisperToPlayer, getInventoryDataById } from '../helpers'
+import { whisperToPlayer, getInventoryDataById, getTotalWealth, getTotalWeight } from '../helpers'
 import { InventoryTemplate } from '../templates'
 
 function updateInventory(context: IIMContext) {
@@ -23,14 +23,8 @@ function updateInventory(context: IIMContext) {
       id: IIM_INVENTORY_IDENTIFIER,
       characterId: inventoryMeta.characterId,
       handoutId: inventoryMeta.handoutId,
-      totalWealth: {
-        copper: '0',
-        silver: '0',
-        electrum: '0',
-        gold: '0',
-        platinum: '0'
-      },
-      totalWeight: '0',
+      totalWealth: getTotalWealth(inventoryMeta.inventory),
+      totalWeight: getTotalWeight(inventoryMeta.inventory),
       inventory: inventoryMeta.inventory.map(itemMeta => ({
         ...itemMeta,
         item: {

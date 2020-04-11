@@ -9,7 +9,7 @@
   },
   "scripts": {
     "test": "jest",
-    "test:html": "npx ts-node --project __html__/tsconfig.json __html__/render.ts && http-server ./public",
+    "test:html": "npx ts-node --project public/renderer/tsconfig.json public/renderer/render.ts",
     "build": "webpack && npm run build:copy",
     "build:watch": "webpack --watch",
     "build:copy": "cat ./build/main.js | pbcopy",

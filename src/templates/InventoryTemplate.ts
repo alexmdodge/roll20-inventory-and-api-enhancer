@@ -10,8 +10,9 @@ import {
 } from './styles'
 import { INVENTORY_HEADER_IMG } from '../constants'
 import { UpdateInventoryItemTemplate, DeleteInventoryItemTemplate } from './buttons'
-import { handoutLink } from '../helpers'
+import { handoutLink, getCharacterCarryWeight } from '../helpers'
 import { UpdateInventoryTemplate } from './buttons/UpdateInventoryTemplate'
+import { css } from '../templates/utils'
 
 const InventoryApiControls = (inventoryMeta: IIMInventoryMetadata) => {
   return [
@@ -32,22 +33,60 @@ const InventoryInfo = (inventoryMeta: IIMInventoryMetadata) => {
 
 const InventoryWealthInfo = (inventoryMeta: IIMInventoryMetadata) => {
   const { totalWealth } = inventoryMeta
+
+  const inventoryWealthStyles = css({
+    'text-align': 'center',
+    'margin-bottom': '10px'
+  })
+  const invWealthContainerStyles = css({
+    'font-size': '16px',
+    'margin-right': '15px'
+  })
+  const invWealthImgStyles = css({
+    'height': '19px',
+    'margin-right': '5px',
+    'margin-bottom': '-4px'
+  })
+
+  const CoinAmount = (img: string, amount: string) => {
+    return `<span style="${invWealthContainerStyles}"><img style="${invWealthImgStyles}" src="${img}">${amount}</span>`
+  }
+
   return [
-    '<div>',
-    `<span><img src="https://app.roll20.net/images/dndstyling/copper.png" />${totalWealth.copper}</span>`,
-    `<span><img src="https://app.roll20.net/images/dndstyling/silver.png" />${totalWealth.silver}</span>`,
-    `<span><img src="https://app.roll20.net/images/dndstyling/electrum.png" />${totalWealth.electrum}</span>`,
-    `<span><img src="https://app.roll20.net/images/dndstyling/gold.png" />${totalWealth.gold}</span>`,
-    `<span><img src="https://app.roll20.net/images/dndstyling/platnum.png" />${totalWealth.platinum}</span>`,
+    `<div style="${inventoryWealthStyles}">`,
+    CoinAmount('https://app.roll20.net/images/dndstyling/copper.png', totalWealth.copper),
+    CoinAmount('https://app.roll20.net/images/dndstyling/silver.png', totalWealth.silver),
+    CoinAmount('https://app.roll20.net/images/dndstyling/electrum.png', totalWealth.electrum),
+    CoinAmount('https://app.roll20.net/images/dndstyling/gold.png', totalWealth.gold),
+    CoinAmount('https://app.roll20.net/images/dndstyling/platnum.png', totalWealth.platinum),
     '</div>'
   ].join('')
 }
 
 const InventoryWeightInfo = (inventoryMeta: IIMInventoryMetadata) => {
-  const { totalWeight } = inventoryMeta
+  const { totalWeight, characterId } = inventoryMeta
+  const inventoryWeightStyles = css({
+    'text-align': 'center',
+    'margin-bottom': '20px'
+  })
+  const invWeightContainerStyles = css({
+    'font-size': '16px',
+    'margin-right': '15px'
+  })
+  const invWeightImgStyles = css({
+    'height': '19px',
+    'margin-right': '5px',
+    'margin-bottom': '-2px'
+  })
+
+  const weightIcon = 'https://imgsrv.roll20.net?src=https%3A//raw.githubusercontent.com/Roll20/roll20-character-sheets/master/5th%2520Edition%2520OGL%2520by%2520Roll20/images/weight_lbs.png'
+
   return [
-    '<div>',
-    `<span><img src="https://imgsrv.roll20.net?src=https%3A//raw.githubusercontent.com/Roll20/roll20-character-sheets/master/5th%2520Edition%2520OGL%2520by%2520Roll20/images/weight_lbs.png" />${totalWeight}</span>`,
+    `<div style="${inventoryWeightStyles}">`,
+    `<span style="${invWeightContainerStyles}">`,
+    `<img style="${invWeightImgStyles}" src="${weightIcon}" />`,
+    getCharacterCarryWeight(characterId, totalWeight),
+    '</span>',
     '</div>'
   ].join('')
 }

@@ -1,5 +1,5 @@
 import { Roll20Object, IIMContext, Roll20ObjectType, IIMInventoryMetadata } from '../types'
-import { whisperToPlayer, parseInventory, getCharacterByName } from '../helpers'
+import { whisperToPlayer, parseInventory, getCharacterByName, getTotalWealth, getTotalWeight } from '../helpers'
 import { InventoryTemplate } from '../templates'
 import { IIM_INVENTORY_IDENTIFIER } from '../constants'
 
@@ -47,18 +47,15 @@ function updateAllInventories({ player }: IIMContext) {
       const characterName = invName.slice(invName.indexOf('(') + 1, invName.indexOf(')'))
       const character = getCharacterByName(characterName)
 
+      const totalWealth = getTotalWealth(invMeta.inventory)
+      const totalWeight = getTotalWeight(invMeta.inventory)
+
       const updatedInventoryMetadata: IIMInventoryMetadata = {
         id: IIM_INVENTORY_IDENTIFIER,
         characterId: character ? character.id : 'unknown',
         handoutId: invMeta.handoutId,
-        totalWealth: {
-          copper: '0',
-          silver: '0',
-          electrum: '0',
-          gold: '0',
-          platinum: '0'
-        },
-        totalWeight: '0',
+        totalWealth,
+        totalWeight,
         inventory: invMeta.inventory.map(itemMeta => ({
           ...itemMeta,
           item: {

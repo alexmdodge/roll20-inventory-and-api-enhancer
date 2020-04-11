@@ -4,7 +4,8 @@ import {
   IIMInventoryMetadata,
   IIMItemMetadata,
   IIMInvItemMetadata,
-  IIMInventoryItemUpdateType
+  IIMInventoryItemUpdateType,
+  Roll20Object
 } from '../types'
 import {
   whisperToPlayer,
@@ -15,7 +16,9 @@ import {
   getItemDataById,
   sayAsPlayer,
   handoutLink,
-  getCommandTextAfter
+  getCommandTextAfter,
+  getTotalWealth,
+  getTotalWeight
 } from '../helpers'
 import { InventoryTemplate } from '../templates'
 
@@ -23,7 +26,8 @@ function updateInventoryWithItem(
   current: IIMInvItemMetadata[],
   itemMeta: IIMItemMetadata,
   itemAmount: string,
-  price?: string
+  player: Roll20Object,
+  price?: string,
 ): IIMInvItemMetadata[] {
   let newInventory = [...current]
   let itemExists = false
@@ -36,11 +40,16 @@ function updateInventoryWithItem(
     // assigned and items need to be switched over
     if (isSameName) {
       itemExists = true
+
       const currentAmount = parseInt(currentItemMeta.amount, 10)
       const newAmount = parseInt(itemAmount, 10)
-
-      const finalAmount = Math.max(0, currentAmount + newAmount)
-      currentItemMeta.amount = `${finalAmount}`
+  
+      if (Number.isNaN(currentAmount) || Number.isNaN(newAmount)) {
+        whisperToPlayer(player, 'Incorrect amount passed, unable to update')
+      } else {
+        const finalAmount = Math.max(0, currentAmount + newAmount)
+        currentItemMeta.amount = `${finalAmount}`
+      }
 
       if (price) {
         currentItemMeta.item.price = price
@@ -145,21 +154,16 @@ function addInventoryItem(context: IIMContext) {
         currentInventoryItems,
         itemMetadata,
         itemAmount,
-        gmPriceOverride
+        player,
+        gmPriceOverride,
       )
   
       const newInventoryMetadata: IIMInventoryMetadata = {
         id: IIM_INVENTORY_IDENTIFIER,
         characterId: currentInventoryMetadata.characterId,
         handoutId: currentInventoryMetadata.handoutId,
-        totalWealth: {
-          copper: '0',
-          silver: '0',
-          electrum: '0',
-          gold: '0',
-          platinum: '0'
-        },
-        totalWeight: '0',
+        totalWealth: getTotalWealth(newInventory),
+        totalWeight: getTotalWeight(newInventory),
         inventory: newInventory
       }
 
@@ -221,7 +225,8 @@ function updateInventoryItem(context: IIMContext) {
       const newInventory: IIMInvItemMetadata[] = updateInventoryWithItem(
         currentInventoryItems,
         itemMetadata,
-        itemAmount
+        itemAmount,
+        player
       )
   
       const newInventoryMetadata: IIMInventoryMetadata = {

@@ -5,7 +5,9 @@ import {
   IIMContext,
   Roll20JournalObjectAttributes,
   IIMInventoryMetadata,
-  IIMItemMetadata
+  IIMItemMetadata,
+  IIMInvItemMetadata,
+  IIMInventoryCoins
 } from './types'
 
 declare global {
@@ -20,6 +22,7 @@ declare global {
   ): Roll20Object;
   function sendChat(speakAs: string, message: string): void;
   function playerIsGM(playerId: string): boolean;
+  function getAttrByName(charId: string, attribute: string): string | null;
 }
 
 export function whisperToPlayer(player: Roll20Object, msg) {
@@ -79,6 +82,16 @@ export function getCharacterByName(characterName: string): Roll20Object | null {
   }
 }
 
+export function getCharacterById(id: string): Roll20Object | null {
+  const character = getObj(Roll20ObjectType.Character, id)
+
+  if (!character) {
+    return null
+  } else {
+    return character
+  }
+}
+
 export function getInventoryByCharacter(character: Roll20Object): Roll20Object | null {
   const inventory = findObjs({
     type: Roll20ObjectType.Handout,
@@ -92,6 +105,10 @@ export function getInventoryByCharacter(character: Roll20Object): Roll20Object |
   } else if (inventory.length > 0) {
     return inventory[0]
   }
+}
+
+export function getCharacterAttribute(id: string, attribute: string): string | null {
+  return getAttrByName(id, attribute)
 }
 
 export function getInventoryById(id: string): Roll20Object | null {
@@ -259,4 +276,124 @@ export function getInventoryDataById(id: string): Promise<InventoryDataResult | 
  */
 export function getCommandTextAfter(matcher: string, command: string): string {
   return command.slice(command.indexOf(matcher) + matcher.length + 1)
+}
+
+export function getCharacterCarryWeight(characterId: string, currentWeight: string): string {
+  // Default strength to 10
+  const strengthStr = getCharacterAttribute(characterId, 'str') || '10'
+  let strength = 10
+  
+  try {
+    strength = parseInt(strengthStr, 10)
+  } catch(e) {
+    // Error parsing, keeping default strength value
+  }
+
+  // Default rules for determining carry weight
+  const defaultCarryMod = 15
+  const totalCarryWeight = strength * defaultCarryMod
+
+  const currentWeightAmount = parseInt(currentWeight, 10)
+  let encumbered = ''
+
+  if (!Number.isNaN(currentWeightAmount)) {
+    encumbered = currentWeightAmount > totalCarryWeight ? '[<b>Encumbered</b>]' : ''
+  }
+
+  return `${currentWeight} / ${totalCarryWeight} ${encumbered} (<b>STR ${strength}</b>)`
+}
+
+export function getTotalWealth(inventory: IIMInvItemMetadata[]): IIMInventoryCoins {
+  const totalWealth = {
+    copper: 0,
+    silver: 0,
+    electrum: 0,
+    gold: 0,
+    platinum: 0
+  }
+
+  const coinMatchers = {
+    copper: [ 'cp', 'copper' ],
+    silver: [ 'sp', 'silver' ],
+    electrum: [ 'ep', 'electrum' ],
+    gold: [ 'gp', 'gold' ],
+    platinum: [ 'pp', 'platinum' ]
+  }
+
+  for (const itemMeta of inventory) {
+    const { price } = itemMeta.item
+
+    Object.keys(coinMatchers).forEach(coinKey => {
+      const matchPositions = coinMatchers[coinKey]
+        .map(key => price.indexOf(key))
+        .filter(pos => pos > -1)
+
+      const identifierPosition = matchPositions.length === 1
+        ? matchPositions[0]
+        : null
+      
+      const isValidAmount = !!identifierPosition
+
+      if (!isValidAmount) { return } /* Not a valid amount identifier */
+
+      const amountStr = price.slice(0, identifierPosition).trim()
+
+      const floatRegex = /^\d+(\.\d+)?$/g
+      const isFloat = floatRegex.test(amountStr)
+
+      if (!isFloat) { return } /* Not a valid float for parsing */
+
+      const parsedAmount = parseFloat(amountStr)
+    
+      if (Number.isNaN(parsedAmount)) { return } /* Error while parsing the amount */
+    
+      const prevAmount = totalWealth[coinKey]
+      totalWealth[coinKey] = Math.round(prevAmount + parsedAmount)
+    })
+  }
+
+  const totalWealthStrings: IIMInventoryCoins = {
+    copper: '0',
+    silver: '0',
+    electrum: '0',
+    gold: '0',
+    platinum: '0'
+  }
+  Object.keys(totalWealth).forEach(coinKey => {
+    totalWealthStrings[coinKey] = `${totalWealth[coinKey]}`
+  })
+
+  return totalWealthStrings
+}
+
+export function getTotalWeight(inventory: IIMInvItemMetadata[]): string {
+  let totalWeight = 0
+
+  for (const itemMeta of inventory) {
+    const { weight } = itemMeta.item
+
+    const weightMatchers = [ 'lb', 'pound' ]
+
+    const weightMatchPositions = weightMatchers
+      .map(key => weight.indexOf(key))
+      .filter(pos => pos > -1)
+
+    const identifierPosition: number | null = weightMatchPositions.length === 1
+      ? weightMatchPositions[0]
+      : null
+
+    const isWeight = !!identifierPosition
+
+    if (!isWeight) { continue } /* Not a valid weight identifier */
+
+    const weightStr = weight.slice(0, identifierPosition)
+    const parsedWeight = parseFloat(weightStr)
+
+    if (Number.isNaN(parsedWeight)) { continue } /* Error while parsing the weight */
+
+    totalWeight = totalWeight + parsedWeight
+  }
+
+  totalWeight = Math.round(totalWeight)
+  return `${totalWeight}`
 }
