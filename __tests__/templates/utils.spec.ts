@@ -42,6 +42,22 @@ describe('css', () => {
 
     expect(sampleCss).toStrictEqual(expectedInlineCss)
   })
+
+  it('renders a css object with flex styles', () => {
+    const sampleCss = css({
+      'padding-bottom': '10px',
+      'margin-left': '-20px',
+      'width': '100%',
+      'display': 'flex',
+      'flex-direction': 'row',
+      'justify-content': 'center',
+      'align-items': 'center'
+    })
+    
+    const expectedInlineCss = 'padding-bottom: 10px; margin-left: -20px; width: 100%; display: flex; flex-direction: row; justify-content: center; align-items: center;'
+
+    expect(sampleCss).toStrictEqual(expectedInlineCss)
+  })
 })
 
 describe('capitalize', () => {

@@ -40,6 +40,12 @@ export const apiControlStyles = css({
   'width': '100%'
 })
 
+export const invApiControlStyles = css({
+  'text-align': 'center',
+  'padding-bottom': '10px',
+  'width': '100%'
+})
+
 export const centerText = css({
   'text-align': 'center'
 })

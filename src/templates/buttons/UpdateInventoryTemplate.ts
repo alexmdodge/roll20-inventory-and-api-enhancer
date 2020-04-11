@@ -7,5 +7,5 @@ export const UpdateInventoryTemplate = (inventoryHandoutId: string, size: Button
   href="${updateInventoryCommandTemplate(inventoryHandoutId)}"
   style="${buttonStyles}${getButtonSizeStyles(size)}"
 >
-  Update
+  Refresh
 </a>`

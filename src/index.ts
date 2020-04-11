@@ -2,7 +2,6 @@ import { Roll20Message } from './types'
 import { parseChatMessage } from './helpers'
 import {
   reportUnknownCommandToPlayer,
-  loadAllItems,
   updateAllItems,
   createItem,
   addInventoryItem,
@@ -12,7 +11,8 @@ import {
   updateItem,
   updateItemImage,
   updateItemDescription,
-  updateInventory
+  updateInventory,
+  updateAllInventories
 } from './commands/index'
 import { createInventory } from './commands/create-inventory'
 
@@ -35,10 +35,6 @@ function detectCommand(message: Roll20Message) {
   }
 
   switch(command.trigger) {
-    case 'load-all-items':
-      loadAllItems(context)
-      break
-
     case 'update-all-items':
       updateAllItems(context)
       break
@@ -69,6 +65,10 @@ function detectCommand(message: Roll20Message) {
 
     case 'update-inventory':
       updateInventory(context)
+      break
+
+    case 'update-all-inventories':
+      updateAllInventories(context)
       break
 
     case 'add-inventory-item':

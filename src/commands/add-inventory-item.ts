@@ -150,7 +150,16 @@ function addInventoryItem(context: IIMContext) {
   
       const newInventoryMetadata: IIMInventoryMetadata = {
         id: IIM_INVENTORY_IDENTIFIER,
+        characterId: currentInventoryMetadata.characterId,
         handoutId: currentInventoryMetadata.handoutId,
+        totalWealth: {
+          copper: '0',
+          silver: '0',
+          electrum: '0',
+          gold: '0',
+          platinum: '0'
+        },
+        totalWeight: '0',
         inventory: newInventory
       }
 
@@ -217,7 +226,16 @@ function updateInventoryItem(context: IIMContext) {
   
       const newInventoryMetadata: IIMInventoryMetadata = {
         id: IIM_INVENTORY_IDENTIFIER,
+        characterId: currentInventoryMetadata.characterId,
         handoutId: currentInventoryMetadata.handoutId,
+        totalWealth: {
+          copper: '0',
+          silver: '0',
+          electrum: '0',
+          gold: '0',
+          platinum: '0'
+        },
+        totalWeight: '0',
         inventory: newInventory
       }
 

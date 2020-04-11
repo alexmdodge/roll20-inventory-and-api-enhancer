@@ -6,7 +6,7 @@ import {
   inventoryHeaderImgStyles,
   inventoryItemApiStyles,
   centerText,
-  apiControlStyles
+  invApiControlStyles
 } from './styles'
 import { INVENTORY_HEADER_IMG } from '../constants'
 import { UpdateInventoryItemTemplate, DeleteInventoryItemTemplate } from './buttons'
@@ -15,8 +15,39 @@ import { UpdateInventoryTemplate } from './buttons/UpdateInventoryTemplate'
 
 const InventoryApiControls = (inventoryMeta: IIMInventoryMetadata) => {
   return [
-    `<div style="${apiControlStyles}">`,
-    UpdateInventoryTemplate(inventoryMeta.handoutId, ButtonSize.Medium),
+    `<div style="${invApiControlStyles}">`,
+    UpdateInventoryTemplate(inventoryMeta.handoutId, ButtonSize.Small),
+    '</div>'
+  ].join('')
+}
+
+const InventoryInfo = (inventoryMeta: IIMInventoryMetadata) => {
+  return [
+    '<div>',
+    InventoryWealthInfo(inventoryMeta),
+    InventoryWeightInfo(inventoryMeta),
+    '</div>'
+  ].join('')
+}
+
+const InventoryWealthInfo = (inventoryMeta: IIMInventoryMetadata) => {
+  const { totalWealth } = inventoryMeta
+  return [
+    '<div>',
+    `<span><img src="https://app.roll20.net/images/dndstyling/copper.png" />${totalWealth.copper}</span>`,
+    `<span><img src="https://app.roll20.net/images/dndstyling/silver.png" />${totalWealth.silver}</span>`,
+    `<span><img src="https://app.roll20.net/images/dndstyling/electrum.png" />${totalWealth.electrum}</span>`,
+    `<span><img src="https://app.roll20.net/images/dndstyling/gold.png" />${totalWealth.gold}</span>`,
+    `<span><img src="https://app.roll20.net/images/dndstyling/platnum.png" />${totalWealth.platinum}</span>`,
+    '</div>'
+  ].join('')
+}
+
+const InventoryWeightInfo = (inventoryMeta: IIMInventoryMetadata) => {
+  const { totalWeight } = inventoryMeta
+  return [
+    '<div>',
+    `<span><img src="https://imgsrv.roll20.net?src=https%3A//raw.githubusercontent.com/Roll20/roll20-character-sheets/master/5th%2520Edition%2520OGL%2520by%2520Roll20/images/weight_lbs.png" />${totalWeight}</span>`,
     '</div>'
   ].join('')
 }
@@ -98,6 +129,7 @@ export const InventoryTemplate = (inventoryMeta: IIMInventoryMetadata): string =
   `<div class="iim__inventory-container" style="${containerStyles}">`,
   `<img style="${inventoryHeaderImgStyles}" src="${INVENTORY_HEADER_IMG}">`,
   InventoryApiControls(inventoryMeta),
+  InventoryInfo(inventoryMeta),
   '<table>',
   TableHeaderTemplate(),
   TableBodyTemplate(inventoryMeta),

@@ -37,6 +37,15 @@ function createNewInventory(player: Roll20Object, character: Roll20Object) {
 
   const inventoryMetadata: IIMInventoryMetadata = {
     id: IIM_INVENTORY_IDENTIFIER,
+    totalWealth: {
+      copper: '0',
+      silver: '0',
+      electrum: '0',
+      gold: '0',
+      platinum: '0'
+    },
+    totalWeight: '0',
+    characterId: character.id,
     handoutId: inventoryHandout.id,
     inventory: defaultInventoryData
   } 

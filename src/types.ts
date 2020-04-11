@@ -70,9 +70,20 @@ export interface IIMContext {
   };
 }
 
+export interface IIMInventoryCoins {
+  copper: string;
+  silver: string;
+  electrum: string;
+  gold: string;
+  platinum: string;
+}
+
 export interface IIMInventoryMetadata {
   id: typeof IIM_INVENTORY_IDENTIFIER;
+  characterId: string | null;
   handoutId: string | null;
+  totalWealth: IIMInventoryCoins;
+  totalWeight: string;
   inventory: IIMInvItemMetadata[];
 }
 

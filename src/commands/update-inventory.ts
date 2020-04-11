@@ -21,7 +21,16 @@ function updateInventory(context: IIMContext) {
 
     const updatedInventoryMetadata: IIMInventoryMetadata = {
       id: IIM_INVENTORY_IDENTIFIER,
+      characterId: inventoryMeta.characterId,
       handoutId: inventoryMeta.handoutId,
+      totalWealth: {
+        copper: '0',
+        silver: '0',
+        electrum: '0',
+        gold: '0',
+        platinum: '0'
+      },
+      totalWeight: '0',
       inventory: inventoryMeta.inventory.map(itemMeta => ({
         ...itemMeta,
         item: {
