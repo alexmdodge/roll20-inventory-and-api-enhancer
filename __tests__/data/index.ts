@@ -67,7 +67,7 @@ export const mockInventory: IIMInvItemMetadata[] = [
   {
     id: IIM_ITEM_IDENTIFIER,
     handoutId: null,
-    amount: '',
+    amount: '5',
     item: {
       ...blankItem,
       'name': 'Test Item 4',

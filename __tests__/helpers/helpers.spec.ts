@@ -61,11 +61,11 @@ describe('getTotalWealth', () => {
 
   it('should return the wealth of a collection of priced items', () => {
     expect(getTotalWealth(mockInventory)).toMatchObject<IIMInventoryCoins>({
-      copper: '4',
-      silver: '2',
+      copper: '42',
+      silver: '4',
       electrum: '0',
-      gold: '2',
-      platinum: '1'
+      gold: '6',
+      platinum: '5'
     })
   })
 
@@ -77,10 +77,10 @@ describe('getTotalWealth', () => {
       item
     }))
     expect(getTotalWealth(invItems)).toMatchObject<IIMInventoryCoins>({
-      copper: '76',
-      silver: '84',
+      copper: '229',
+      silver: '252',
       electrum: '0',
-      gold: '82215',
+      gold: '246645',
       platinum: '0'
     })
   })

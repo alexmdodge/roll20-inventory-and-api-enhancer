@@ -321,7 +321,8 @@ export function getTotalWealth(inventory: IIMInvItemMetadata[]): IIMInventoryCoi
   }
 
   for (const itemMeta of inventory) {
-    const { price } = itemMeta.item
+    const { amount, item: itemData } = itemMeta
+    const { price } = itemData
 
     Object.keys(coinMatchers).forEach(coinKey => {
       const matchPositions = coinMatchers[coinKey]
@@ -343,12 +344,14 @@ export function getTotalWealth(inventory: IIMInvItemMetadata[]): IIMInventoryCoi
 
       if (!isFloat) { return } /* Not a valid float for parsing */
 
-      const parsedAmount = parseFloat(amountStr)
-    
-      if (Number.isNaN(parsedAmount)) { return } /* Error while parsing the amount */
-    
-      const prevAmount = totalWealth[coinKey]
-      totalWealth[coinKey] = Math.round(prevAmount + parsedAmount)
+      const parsedPrice = parseFloat(amountStr)
+      let itemAmount = parseInt(amount, 10)
+      
+      if (Number.isNaN(parsedPrice)) { return } /* Error while parsing the amount */
+      
+      itemAmount = Number.isNaN(itemAmount) ? 1 : itemAmount
+      const previousPrice = totalWealth[coinKey]
+      totalWealth[coinKey] = Math.round(previousPrice + (parsedPrice * itemAmount))
     })
   }
 
