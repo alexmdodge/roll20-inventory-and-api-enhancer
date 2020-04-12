@@ -3,7 +3,7 @@ import {
   IIMContext,
   IIMInventoryMetadata
 } from '../types'
-import { whisperToPlayer, getInventoryDataById, getTotalWealth, getTotalWeight } from '../helpers'
+import { whisperToPlayer, getInventoryDataById, getTotalWealth, getTotalWeight, normalizeInventoryMeta } from '../helpers'
 import { InventoryTemplate } from '../templates'
 
 function updateInventory(context: IIMContext) {
@@ -19,13 +19,15 @@ function updateInventory(context: IIMContext) {
       return
     }
 
+    const normalizedMeta = normalizeInventoryMeta(inventoryMeta)
+
     const updatedInventoryMetadata: IIMInventoryMetadata = {
       id: IIM_INVENTORY_IDENTIFIER,
-      characterId: inventoryMeta.characterId,
-      handoutId: inventoryMeta.handoutId,
-      totalWealth: getTotalWealth(inventoryMeta.inventory),
-      totalWeight: getTotalWeight(inventoryMeta.inventory),
-      inventory: inventoryMeta.inventory.map(itemMeta => ({
+      characterId: normalizedMeta.characterId,
+      handoutId: normalizedMeta.handoutId,
+      totalWealth: getTotalWealth(normalizedMeta.inventory),
+      totalWeight: getTotalWeight(normalizedMeta.inventory),
+      inventory: normalizedMeta.inventory.map(itemMeta => ({
         ...itemMeta,
         item: {
           ...itemMeta.item,
@@ -38,7 +40,7 @@ function updateInventory(context: IIMContext) {
 
     // Ensure we don't get any stack errors
     setTimeout(() => {
-      inventoryHandout.set('notes', InventoryTemplate(inventoryMeta))
+      inventoryHandout.set('notes', InventoryTemplate(updatedInventoryMetadata))
       inventoryHandout.set('gmnotes', JSON.stringify(updatedInventoryMetadata, null, 2))
     }, 0)
 

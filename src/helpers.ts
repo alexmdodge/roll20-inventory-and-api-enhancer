@@ -15,7 +15,7 @@ declare global {
   function on(event: 'ready', cb: () => void): void;
   function on(event: 'chat:message', cb: (data: Roll20Message) => void): void;
   function getObj(type: Roll20ObjectType, id: string): Roll20Object;
-  function findObjs(attributes: { type?: Roll20ObjectType; name?: string }): Roll20Object[];
+  function findObjs(attributes: { type?: Roll20ObjectType; name?: string; characterid?: string }): Roll20Object[];
   function createObj(
     type: Roll20ObjectType.Character | Roll20ObjectType.Handout,
     attributes: Roll20JournalObjectAttributes
@@ -107,8 +107,20 @@ export function getInventoryByCharacter(character: Roll20Object): Roll20Object |
   }
 }
 
-export function getCharacterAttribute(id: string, attribute: string): string | null {
-  return getAttrByName(id, attribute)
+export function getCharacterAttribute(id: string, name: string): Roll20Object {
+  const attribute = findObjs({
+    type: Roll20ObjectType.Attribute,
+    characterid: id,
+    name
+  })
+
+  if (!attribute) {
+    return null
+  } else if (attribute.length === 0) {
+    return null
+  } else if (attribute.length > 0) {
+    return attribute[0]
+  }
 }
 
 export function getInventoryById(id: string): Roll20Object | null {
@@ -142,6 +154,7 @@ export function parseInventory(invStr: string): IIMInventoryMetadata | null {
     data = JSON.parse(invStr)
   } catch(e) {
     // Error parsing
+    log(`Error while parsing: ${e}`)
   }
 
   return data
@@ -280,7 +293,9 @@ export function getCommandTextAfter(matcher: string, command: string): string {
 
 export function getCharacterCarryWeight(characterId: string, currentWeight: string): string {
   // Default strength to 10
-  const strengthStr = getCharacterAttribute(characterId, 'str') || '10'
+  const strengthAttr = getCharacterAttribute(characterId, 'strength')
+
+  const strengthStr = strengthAttr ? strengthAttr.get('current') : '10'
   let strength = 10
   
   try {
@@ -337,7 +352,8 @@ export function getTotalWealth(inventory: IIMInvItemMetadata[]): IIMInventoryCoi
 
       if (!isValidAmount) { return } /* Not a valid amount identifier */
 
-      const amountStr = price.slice(0, identifierPosition).trim()
+      // Ensure that no whitespace or commas exist
+      const amountStr = price.slice(0, identifierPosition).replace(/,/g, '').trim()
 
       const floatRegex = /^\d+(\.\d+)?$/g
       const isFloat = floatRegex.test(amountStr)
@@ -373,6 +389,7 @@ export function getTotalWeight(inventory: IIMInvItemMetadata[]): string {
   let totalWeight = 0
 
   for (const itemMeta of inventory) {
+    const { amount } = itemMeta
     const { weight } = itemMeta.item
 
     const weightMatchers = [ 'lb', 'pound' ]
@@ -392,11 +409,61 @@ export function getTotalWeight(inventory: IIMInvItemMetadata[]): string {
     const weightStr = weight.slice(0, identifierPosition)
     const parsedWeight = parseFloat(weightStr)
 
-    if (Number.isNaN(parsedWeight)) { continue } /* Error while parsing the weight */
-
-    totalWeight = totalWeight + parsedWeight
+    let itemAmount = parseInt(amount, 10)
+      
+    if (Number.isNaN(parsedWeight)) { return } /* Error while parsing the amount */
+      
+    itemAmount = Number.isNaN(itemAmount) ? 1 : itemAmount
+    totalWeight = totalWeight + (parsedWeight * itemAmount)
   }
 
   totalWeight = Math.round(totalWeight)
   return `${totalWeight}`
+}
+
+export function trimWhitespace(value: string): string {
+  return value.replace(/\s/g, '')
+}
+
+/**
+ * Sometimes property keys can become corrupted, all whitespace needs to be removed
+ * from handout ids, as well as keys of properties
+ * @param invMeta Metadata that needs to be normalized
+ */
+export function normalizeInventoryMeta(invMeta: IIMInventoryMetadata): IIMInventoryMetadata {
+  const normalizeKeys = (target: any, source: any) => {
+    Object.keys(source).forEach(key => {
+      const value = source[key]
+      const normalizedKey = trimWhitespace(key)
+  
+      target[normalizedKey] = value 
+    })
+
+    return target
+  }
+
+  const topLevelNormalized: any = normalizeKeys({}, invMeta)
+  topLevelNormalized.handoutId = trimWhitespace(topLevelNormalized.handoutId)
+  topLevelNormalized['characterId'] = trimWhitespace(topLevelNormalized.characterId ?? '')
+
+  const inventory = topLevelNormalized.inventory.map(itemMeta => {
+    const normalizedItemMeta = normalizeKeys({}, itemMeta)
+
+    normalizedItemMeta.handoutId = normalizedItemMeta.handoutId !== null
+      ? trimWhitespace(normalizedItemMeta.handoutId)
+      : null
+    const normalizedItem = normalizeKeys({}, normalizedItemMeta.item)
+
+    return {
+      ...normalizedItemMeta,
+      item: normalizedItem
+    }
+  })
+
+  const normalizedInventory: IIMInventoryMetadata = {
+    ...topLevelNormalized,
+    inventory
+  }
+
+  return normalizedInventory
 }

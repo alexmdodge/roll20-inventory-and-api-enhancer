@@ -17,7 +17,8 @@ export enum Roll20ObjectType {
   Rollable_Table = 'rollabletable',
   Table_Item = 'tableitem',
   Character = 'character',
-  Handout = 'handout'
+  Handout = 'handout',
+  Attribute = 'attribute',
 }
 
 export enum Roll20MessageType {
@@ -38,6 +39,7 @@ export interface Roll20Object {
   get(property: string): AttributeValue;
   get(property: 'displayname'): string;
   get(property: 'name'): string;
+  get(property: 'current'): string;
   set(property: string, value: AttributeValue);
   remove(options?: any);
 }

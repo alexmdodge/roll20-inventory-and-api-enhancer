@@ -19,6 +19,7 @@ If you would like to contribute to the project please refer to the contributor d
 
 ## Roadmap
 
+- [ ] Normalize all item keys to protect from whitespace changes
 - [ ] All inventories to be updated so template changes in future versions can be applied
 - [ ] Add inventory help menu which can be toggled to display help text
 - [ ] Add icons to inventory and item buttons to make intention clearerp

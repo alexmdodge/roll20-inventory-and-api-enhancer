@@ -17,7 +17,7 @@ export const invalidChatMessage: Roll20Message = {
   who: TEST_PLAYER_ID
 }
 
-const blankItem: IIMItem = {
+export const blankItem: IIMItem = {
   'name': 'Test Item',
   'source': 'Test Source',
   'rarity': 'Test Rarity',
@@ -50,7 +50,7 @@ export const mockInventory: IIMInvItemMetadata[] = [
       ...blankItem,
       'name': 'Test Item 2',
       'weight': '2 lb.',
-      'price': '2 sp'
+      'price': '2,200 sp'
     }
   },
   {

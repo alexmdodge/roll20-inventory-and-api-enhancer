@@ -233,14 +233,8 @@ function updateInventoryItem(context: IIMContext) {
         id: IIM_INVENTORY_IDENTIFIER,
         characterId: currentInventoryMetadata.characterId,
         handoutId: currentInventoryMetadata.handoutId,
-        totalWealth: {
-          copper: '0',
-          silver: '0',
-          electrum: '0',
-          gold: '0',
-          platinum: '0'
-        },
-        totalWeight: '0',
+        totalWealth: getTotalWealth(newInventory),
+        totalWeight: getTotalWeight(newInventory),
         inventory: newInventory
       }
 

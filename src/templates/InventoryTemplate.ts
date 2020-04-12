@@ -45,7 +45,7 @@ const InventoryWealthInfo = (inventoryMeta: IIMInventoryMetadata) => {
   const invWealthImgStyles = css({
     'height': '19px',
     'margin-right': '5px',
-    'margin-bottom': '-4px'
+    'margin-bottom': '2px'
   })
 
   const CoinAmount = (img: string, amount: string) => {
@@ -76,7 +76,7 @@ const InventoryWeightInfo = (inventoryMeta: IIMInventoryMetadata) => {
   const invWeightImgStyles = css({
     'height': '19px',
     'margin-right': '5px',
-    'margin-bottom': '-2px'
+    'margin-bottom': '5px'
   })
 
   const weightIcon = 'https://imgsrv.roll20.net?src=https%3A//raw.githubusercontent.com/Roll20/roll20-character-sheets/master/5th%2520Edition%2520OGL%2520by%2520Roll20/images/weight_lbs.png'

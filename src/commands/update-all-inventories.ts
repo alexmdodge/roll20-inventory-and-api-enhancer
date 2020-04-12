@@ -1,5 +1,5 @@
 import { Roll20Object, IIMContext, Roll20ObjectType, IIMInventoryMetadata } from '../types'
-import { whisperToPlayer, parseInventory, getCharacterByName, getTotalWealth, getTotalWeight } from '../helpers'
+import { whisperToPlayer, parseInventory, getCharacterByName, getTotalWealth, getTotalWeight, trimWhitespace, normalizeInventoryMeta } from '../helpers'
 import { InventoryTemplate } from '../templates'
 import { IIM_INVENTORY_IDENTIFIER } from '../constants'
 
@@ -43,24 +43,26 @@ function updateAllInventories({ player }: IIMContext) {
     whisperToPlayer(player, `Acting on inventories of length: ${allInventories.length}`)
     allInventories.forEach(({ handout, invMeta }) => {
 
+      const normalizedMeta = normalizeInventoryMeta(invMeta)
+
       const invName = handout.get('name')
       const characterName = invName.slice(invName.indexOf('(') + 1, invName.indexOf(')'))
       const character = getCharacterByName(characterName)
 
-      const totalWealth = getTotalWealth(invMeta.inventory)
-      const totalWeight = getTotalWeight(invMeta.inventory)
+      const totalWealth = getTotalWealth(normalizedMeta.inventory)
+      const totalWeight = getTotalWeight(normalizedMeta.inventory)
 
       const updatedInventoryMetadata: IIMInventoryMetadata = {
         id: IIM_INVENTORY_IDENTIFIER,
         characterId: character ? character.id : 'unknown',
-        handoutId: invMeta.handoutId,
+        handoutId: trimWhitespace(normalizedMeta.handoutId),
         totalWealth,
         totalWeight,
-        inventory: invMeta.inventory.map(itemMeta => ({
+        inventory: normalizedMeta.inventory.map(itemMeta => ({
           ...itemMeta,
           item: {
             ...itemMeta.item,
-  
+
             // Always ensure descriptions are empty
             description: ''
           }
