@@ -28,10 +28,17 @@ export const inventoryHeaderImgStyles = css({
   'margin': '10px auto'
 })
 
+export const inventoryItemThumbStyles = css({
+  'height': '30px',
+  'width': '30px',
+  'display': 'inline-block',
+  'margin': '2px 10px 2px',
+  'border': '1px solid #555'
+})
+
 export const inventoryItemApiStyles = css({
   'cursor': 'pointer',
-  'text-decoration': 'none',
-  'color': 'darkgreen'
+  'text-decoration': 'none'
 })
 
 export const apiControlStyles = css({
@@ -47,7 +54,21 @@ export const invApiControlStyles = css({
 })
 
 export const centerText = css({
-  'text-align': 'center'
+  'text-align': 'center',
+  'vertical-align': 'middle'
+})
+
+export const leftText =  css({
+  'text-align': 'left',
+  'vertical-align': 'middle'
+})
+
+export const noPad = css({
+  'padding': '0px',
+})
+
+export const noMargin = css({
+  'margin': '0px'
 })
 
 export * from './button'

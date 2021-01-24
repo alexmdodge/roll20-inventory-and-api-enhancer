@@ -4,8 +4,12 @@ import {
 import {
   containerStyles,
   inventoryHeaderImgStyles,
+  inventoryItemThumbStyles,
   inventoryItemApiStyles,
   centerText,
+  leftText,
+  noPad,
+  noMargin,
   invApiControlStyles
 } from './styles'
 import { INVENTORY_HEADER_IMG } from '../constants'
@@ -117,14 +121,25 @@ const TableHeaderItemsTemplate = () => {
 
 const renderBodyItems = (itemMeta: IIMInvItemMetadata, inventoryHandoutId: string | null) => {
   const { handoutId, item, amount } = itemMeta
-  const { name, price, weight } = item
+  const { name, price, weight, imageUrl } = item
   const itemName = handoutId
-    ? `<a href=${handoutLink(handoutId)} style="${inventoryItemApiStyles}">${name}</a></td>`
+    ? `<a href=${handoutLink(handoutId)} style="${inventoryItemApiStyles}"><span style="${noMargin}${noPad}color:#444;">${name}</span></a>`
     : `${name}`
 
+  // Optionally transform the URL from full to thumb
+  const notPlaceholderCell = itemName.indexOf('---') < 0
+  const itemImage = imageUrl && notPlaceholderCell
+    ? `<img style="${inventoryItemThumbStyles}" src="${imageUrl}">`
+    : ``
+  
+  const initialCellStyle = notPlaceholderCell ? leftText : centerText
+
   return [
-    // Item Name
-    `<td style="${centerText}">${itemName}</td>`,
+    // Item Name and Icon
+    `<td style="${initialCellStyle}">`,
+      `${itemImage}`,
+      `<p style="${noPad}${noMargin}font-weight:bold;display:inline-block;">${itemName}</p>`,
+    `</td>`,
 
     // Amount in Inventory
     `<td style="${centerText}">${amount}</td>`,

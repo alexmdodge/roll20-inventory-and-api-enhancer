@@ -25,7 +25,7 @@ function createNewItem(player: Roll20Object, itemData: IIMItem) {
     handout.set('gmnotes', JSON.stringify(itemMetadata, null, 2))
   
     const handoutLinkStr = `<a style="font-weight:bold;" href="${handoutLink(handout.id)}">${itemData.name}</a>`
-    sayAsPlayer(player, `Created new item: ${handoutLinkStr}`)
+    whisperToPlayer(player, `Created new item: ${handoutLinkStr}`)
   }, 0)
 }
 
