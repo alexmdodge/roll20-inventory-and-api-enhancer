@@ -21,7 +21,7 @@ import { css } from '../templates/utils'
 const InventoryApiControls = (inventoryMeta: IIMInventoryMetadata) => {
   return [
     `<div style="${invApiControlStyles}">`,
-    UpdateInventoryTemplate(inventoryMeta.handoutId, ButtonSize.Small),
+    UpdateInventoryTemplate(inventoryMeta.characterName, ButtonSize.Small),
     '</div>'
   ].join('')
 }
@@ -95,16 +95,16 @@ const InventoryWeightInfo = (inventoryMeta: IIMInventoryMetadata) => {
   ].join('')
 }
 
-const renderActionsCell = (inventoryHandoutId: string | null, itemMeta: IIMInvItemMetadata): string => {
+const renderActionsCell = (charName: string | null, itemMeta: IIMInvItemMetadata): string => {
   const { handoutId: itemHandoutId, amount, item } = itemMeta
-  if (!inventoryHandoutId || !itemHandoutId) {
+  if (!charName || !itemHandoutId) {
     return `<td style="${centerText}">---</td>`
   }
 
   return [
     `<td style="position:relative;${centerText}">`,
-    UpdateInventoryItemTemplate(inventoryHandoutId, itemHandoutId, ButtonSize.Small),
-    amount === '0' ? DeleteInventoryItemTemplate(inventoryHandoutId, item.name, ButtonSize.Small) : '',
+    UpdateInventoryItemTemplate(charName, itemHandoutId, ButtonSize.Small),
+    amount === '0' ? DeleteInventoryItemTemplate(charName, item.name, ButtonSize.Small) : '',
     '</td>'
   ].join('')
 }
@@ -119,7 +119,7 @@ const TableHeaderItemsTemplate = () => {
   ].join('')
 }
 
-const renderBodyItems = (itemMeta: IIMInvItemMetadata, inventoryHandoutId: string | null) => {
+const renderBodyItems = (itemMeta: IIMInvItemMetadata, charName: string | null) => {
   const { handoutId, item, amount } = itemMeta
   const { name, price, weight, imageUrl } = item
   const itemName = handoutId
@@ -151,14 +151,14 @@ const renderBodyItems = (itemMeta: IIMInvItemMetadata, inventoryHandoutId: strin
     `<td style="${centerText}">${weight}</td>`,
 
     // Actions that can be taken on the item
-    renderActionsCell(inventoryHandoutId, itemMeta)
+    renderActionsCell(charName, itemMeta)
   ].join('')
 }
 
 const TableBodyItemsTemplate = (inventoryMeta: IIMInventoryMetadata) => {
-  const { handoutId: inventoryHandoutId, inventory } = inventoryMeta
+  const { inventory, characterName } = inventoryMeta
   return inventory
-    .map(item => renderBodyItems(item, inventoryHandoutId))
+    .map(item => renderBodyItems(item, characterName))
     .map(item => `<tr>${item}</tr>`)
     .join('')
 }

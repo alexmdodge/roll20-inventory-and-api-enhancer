@@ -31,14 +31,17 @@ function updateInventoryWithItem(
 ): IIMInvItemMetadata[] {
   let newInventory = [...current]
   let itemExists = false
+  let itemUpdated = false
 
   newInventory = newInventory.map(currentItemMeta => {
-    const isSameName = currentItemMeta.item.name === itemMeta.item.name
-
-    // Loosen checking here simply to name, which allows multiple items
-    // to exist in the table with the same name in case new names are
-    // assigned and items need to be switched over
-    if (isSameName) {
+    const isSameId = currentItemMeta.handoutId === itemMeta.handoutId
+    
+    // Update purely based on ID in the table
+    if (isSameId) {
+      if (itemUpdated) {
+        whisperToPlayer(player, `Duplicate of ${itemMeta.item.name} detected, removing from inventory`)
+        return null
+      }
       itemExists = true
 
       const currentAmount = parseInt(currentItemMeta.amount, 10)
@@ -55,11 +58,15 @@ function updateInventoryWithItem(
         currentItemMeta.item.price = price
       }
 
+      currentItemMeta.item.name = itemMeta.item.name
       currentItemMeta.item.weight = itemMeta.item.weight
+      currentItemMeta.item.imageUrl = itemMeta.item.imageUrl
+
+      itemUpdated = true
     }
 
     return currentItemMeta
-  })
+  }).filter(item => item !== null)
 
   if (!itemExists) {
     const itemWithPrice = price ? { price } : {}
@@ -104,21 +111,21 @@ function addInventoryItem(context: IIMContext) {
   const itemName = commandOptions.slice(commandOptions.indexOf(itemId) + itemId.length + 1)
   const isPlayerGm = playerIsGM(player.id)
 
-  const character = getCharacterByName(characterName)
+  const character = getCharacterByName(characterName, player)
   
-  if (character === null) {
+  if (!character) {
     whisperToPlayer(player, `Character of name <b>${characterName}</b> doesn't exist`)
     return
   }
   
-  const inventory = getInventoryByCharacter(character)
+  const inventory = getInventoryByCharacter(character, player)
   
   if (inventory === null) {
     whisperToPlayer(player, `Inventory could not be found for <b>${characterName}</b>`)
     return
   }
 
-  if (inventory === null) {
+  if (itemName === null) {
     whisperToPlayer(player, `Error retrieving ${itemName} from the Roll20 Journal`)
     return
   }
@@ -160,6 +167,7 @@ function addInventoryItem(context: IIMContext) {
   
       const newInventoryMetadata: IIMInventoryMetadata = {
         id: IIM_INVENTORY_IDENTIFIER,
+        characterName: currentInventoryMetadata.characterName,
         characterId: currentInventoryMetadata.characterId,
         handoutId: currentInventoryMetadata.handoutId,
         totalWealth: getTotalWealth(newInventory),
@@ -192,13 +200,20 @@ function updateInventoryItem(context: IIMContext) {
   const itemAmount = updateType === IIMInventoryItemUpdateType.Add
     ? `${origItemAmount}`
     : `-${origItemAmount}`
-  const inventoryHandoutId = data[2].trim()
+  const charName = data[2].trim()
   const itemHandoutId = data[3].trim()
 
-  const inventory = getInventoryById(inventoryHandoutId)
+  const character = getCharacterByName(charName, player)
+
+  if (!character) {
+    whisperToPlayer(player, `Character by the name [${charName}] could not be found`)
+    return
+  }
+
+  const inventory = getInventoryByCharacter(character, player)
   
   if (inventory === null) {
-    whisperToPlayer(player, 'Inventory could not be found when attempting item update')
+    whisperToPlayer(player, `Inventory could not be found for [${charName}] when attempting item update`)
     return
   }
 
@@ -231,6 +246,7 @@ function updateInventoryItem(context: IIMContext) {
   
       const newInventoryMetadata: IIMInventoryMetadata = {
         id: IIM_INVENTORY_IDENTIFIER,
+        characterName: currentInventoryMetadata.characterName,
         characterId: currentInventoryMetadata.characterId,
         handoutId: currentInventoryMetadata.handoutId,
         totalWealth: getTotalWealth(newInventory),
@@ -264,10 +280,17 @@ function deleteInventoryItem(context: IIMContext) {
   const commandOptions = command.options
 
   const data = commandOptions.split(/\s/g)
-  const inventoryHandoutId = data[0].trim()
-  const itemName = getCommandTextAfter(inventoryHandoutId, commandOptions)
+  const charName = data[0].trim()
+  const itemName = getCommandTextAfter(charName, commandOptions)
 
-  const inventory = getInventoryById(inventoryHandoutId)
+  const character = getCharacterByName(charName, player)
+
+  if (!character) {
+    whisperToPlayer(player, `Character by the name [${charName}] could not be found`)
+    return
+  }
+
+  const inventory = getInventoryByCharacter(character, player)
   
   if (inventory === null) {
     whisperToPlayer(player, 'Inventory could not be found when attempting item update')
@@ -319,22 +342,22 @@ function addItemToInventoryCommandTemplate(handoutId: string, name: string): str
   ].join(' ')
 }
 
-function updateInventoryItemCommandTemplate(inventoryHandoutId: string, itemHandoutId: string): string {
+function updateInventoryItemCommandTemplate(charName: string, itemHandoutId: string): string {
   return [
     '!iim',
     'update-inventory-item',
     '?{Add or Remove|Add,add|Remove,remove}',
     '?{Amount}',
-    inventoryHandoutId,
+    charName,
     itemHandoutId
   ].join(' ')
 }
 
-function deleteInventoryItemCommandTemplate(inventoryHandoutId: string, itemName: string): string {
+function deleteInventoryItemCommandTemplate(charName: string, itemName: string): string {
   return [
     '!iim',
     'delete-inventory-item',
-    inventoryHandoutId,
+    charName,
     itemName
   ].join(' ')
 }

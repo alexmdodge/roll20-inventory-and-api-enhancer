@@ -1,3 +1,4 @@
+import { resolve } from 'path'
 import {
   Roll20Message,
   Roll20ObjectType,
@@ -67,21 +68,6 @@ export function getHandoutsByName(handoutName: string): Roll20Object[] {
   })
 }
 
-export function getCharacterByName(characterName: string): Roll20Object | null {
-  const characters = findObjs({
-    type: Roll20ObjectType.Character,
-    name: characterName
-  })
-
-  if (!characters) {
-    return null
-  } else if (characters.length === 0) {
-    return null
-  } else if (characters.length > 0) {
-    return characters[0]
-  }
-}
-
 export function getCharacterById(id: string): Roll20Object | null {
   const character = getObj(Roll20ObjectType.Character, id)
 
@@ -89,21 +75,6 @@ export function getCharacterById(id: string): Roll20Object | null {
     return null
   } else {
     return character
-  }
-}
-
-export function getInventoryByCharacter(character: Roll20Object): Roll20Object | null {
-  const inventory = findObjs({
-    type: Roll20ObjectType.Handout,
-    name: `Inventory (${character.get('name')})`
-  })
-
-  if (!inventory) {
-    return null
-  } else if (inventory.length === 0) {
-    return null
-  } else if (inventory.length > 0) {
-    return inventory[0]
   }
 }
 
@@ -257,6 +228,66 @@ export type InventoryDataResult = {
   handout: Roll20Object;
 }
 
+export function getInventoryDataByCharName(characterName: string, player: Roll20Object): Promise<InventoryDataResult | null> {
+  return new Promise(resolve => {
+    const character = getCharacterByName(characterName, player)
+
+    if (!character) {
+      whisperToPlayer(player, `Character with name [${characterName}] does not exist`)
+      resolve(null)
+      return
+    }
+
+    const inventory = getInventoryByCharacter(character, player)
+
+    if (!inventory) {
+      whisperToPlayer(player, `Inventory does not exit for [${characterName}]`)
+      resolve(null)
+      return
+    }
+  
+    appendInventoryMetaToData(inventory)
+      .then(data => resolve(data))
+  })
+}
+
+export function getCharacterByName(characterName: string, player: Roll20Object): Roll20Object | null {
+  const characters = findObjs({
+    type: Roll20ObjectType.Character,
+    name: characterName
+  })
+
+  if (!characters) {
+    return null
+  } else if (characters.length === 0) {
+    return null
+  } else if (characters.length > 0) {
+    if (characters.length > 1) {
+      whisperToPlayer(player, `Multiple characters by the name [${characterName}] exist, choosing the first ${JSON.stringify(characters)}`)
+    }
+    return characters[0]
+  }
+}
+
+export function getInventoryByCharacter(character: Roll20Object, player: Roll20Object): Roll20Object | null {
+  const name = character.get('name')
+  const inventory = findObjs({
+    type: Roll20ObjectType.Handout,
+    name: `Inventory (${name})`
+  })
+
+  if (!inventory) {
+    return null
+  } else if (inventory.length === 0) {
+    return null
+  } else if (inventory.length > 0) {
+    if (inventory.length > 1) {
+      whisperToPlayer(player, `Multiple inventories exist for the character [${name}], choosing the first`)
+    }
+    return inventory[0]
+  }
+}
+
 export function getInventoryDataById(id: string): Promise<InventoryDataResult | null> {
   return new Promise(resolve => {
     const inventory = getInventoryById(id)
@@ -266,6 +297,13 @@ export function getInventoryDataById(id: string): Promise<InventoryDataResult | 
       return
     }
 
+    appendInventoryMetaToData(inventory)
+      .then(data => resolve(data))
+  })
+}
+
+function appendInventoryMetaToData(inventory: Roll20Object): Promise<InventoryDataResult | null> {
+  return new Promise(resolve => {
     inventory.get('gmnotes', data => {
       const inventoryMetadata = parseInventory(data)
 

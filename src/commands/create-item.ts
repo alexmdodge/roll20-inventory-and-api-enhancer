@@ -73,7 +73,7 @@ function copyItem(context: IIMContext) {
   const itemName = commandOptions.slice(handoutId.length + 1)
 
   if (handoutId === 'new') {
-    createDefaultItem(player, name)
+    createDefaultItem(player, itemName)
   } else {
     createCopyItem(player, itemName, handoutId)
   }

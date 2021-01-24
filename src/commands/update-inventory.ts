@@ -3,7 +3,7 @@ import {
   IIMContext,
   IIMInventoryMetadata
 } from '../types'
-import { whisperToPlayer, getInventoryDataById, getTotalWealth, getTotalWeight, normalizeInventoryMeta } from '../helpers'
+import { whisperToPlayer, getInventoryDataByCharName, getTotalWealth, getTotalWeight, normalizeInventoryMeta } from '../helpers'
 import { InventoryTemplate } from '../templates'
 
 function updateInventory(context: IIMContext) {
@@ -11,9 +11,9 @@ function updateInventory(context: IIMContext) {
   const commandOptions = command.options
 
   const data = commandOptions.split(/\s/g)
-  const inventoryId = data[0].trim()
+  const charName = data[0].trim()
 
-  getInventoryDataById(inventoryId).then(({ meta: inventoryMeta, handout: inventoryHandout }) => {
+  getInventoryDataByCharName(charName, player).then(({ meta: inventoryMeta, handout: inventoryHandout }) => {
     if (!inventoryMeta) {
       whisperToPlayer(player, `Unable to retrieve ${inventoryHandout.get('name')} data during update.`)
       return
@@ -23,6 +23,7 @@ function updateInventory(context: IIMContext) {
 
     const updatedInventoryMetadata: IIMInventoryMetadata = {
       id: IIM_INVENTORY_IDENTIFIER,
+      characterName: normalizedMeta.characterName,
       characterId: normalizedMeta.characterId,
       handoutId: normalizedMeta.handoutId,
       totalWealth: getTotalWealth(normalizedMeta.inventory),
@@ -49,11 +50,11 @@ function updateInventory(context: IIMContext) {
   })
 }
 
-function updateInventoryCommandTemplate(inventoryHandoutId: string): string {
+function updateInventoryCommandTemplate(charName: string): string {
   return [
     '!iim',
     'update-inventory',
-    inventoryHandoutId
+    charName
   ].join(' ')
 }
 

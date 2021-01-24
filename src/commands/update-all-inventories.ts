@@ -47,13 +47,19 @@ function updateAllInventories({ player }: IIMContext) {
 
       const invName = handout.get('name')
       const characterName = invName.slice(invName.indexOf('(') + 1, invName.indexOf(')'))
-      const character = getCharacterByName(characterName)
+      const character = getCharacterByName(characterName, player)
+
+      if (!character) {
+        whisperToPlayer(player, `No character by the name of <b>${characterName}</b> exists, skipping inventory update`)
+        return
+      }
 
       const totalWealth = getTotalWealth(normalizedMeta.inventory)
       const totalWeight = getTotalWeight(normalizedMeta.inventory)
 
       const updatedInventoryMetadata: IIMInventoryMetadata = {
         id: IIM_INVENTORY_IDENTIFIER,
+        characterName: characterName,
         characterId: character ? character.id : 'unknown',
         handoutId: trimWhitespace(normalizedMeta.handoutId),
         totalWealth,

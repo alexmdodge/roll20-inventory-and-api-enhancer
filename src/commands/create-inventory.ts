@@ -10,7 +10,8 @@ import { whisperToPlayer, getCharacterByName, getInventoryByCharacter } from '..
 import { InventoryTemplate } from '../templates'
 
 function createNewInventory(player: Roll20Object, character: Roll20Object) {
-  const inventoryName = `Inventory (${character.get('name')})`
+  const charName = character.get('name')
+  const inventoryName = `Inventory (${charName})`
   const inventoryHandout = createObj(Roll20ObjectType.Handout, {
     name: inventoryName
   })
@@ -45,6 +46,7 @@ function createNewInventory(player: Roll20Object, character: Roll20Object) {
       platinum: '0'
     },
     totalWeight: '0',
+    characterName: charName,
     characterId: character.id,
     handoutId: inventoryHandout.id,
     inventory: defaultInventoryData
@@ -58,14 +60,14 @@ function createNewInventory(player: Roll20Object, character: Roll20Object) {
 }
 
 function createInventoryForCharacter(player: Roll20Object, characterName: string) {
-  const character = getCharacterByName(characterName)
+  const character = getCharacterByName(characterName, player)
 
   if (character === null) {
     whisperToPlayer(player, `Character of name <b>${characterName}</b> doesn't exist`)
     return
   }
 
-  const potentialInventory = getInventoryByCharacter(character)
+  const potentialInventory = getInventoryByCharacter(character, player)
 
   if (potentialInventory) {
     const link = `<a href="http://journal.roll20.net/handout/${potentialInventory.id}">${characterName}</a>`

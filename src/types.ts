@@ -82,6 +82,7 @@ export interface IIMInventoryCoins {
 
 export interface IIMInventoryMetadata {
   id: typeof IIM_INVENTORY_IDENTIFIER;
+  characterName: string | null;
   characterId: string | null;
   handoutId: string | null;
   totalWealth: IIMInventoryCoins;

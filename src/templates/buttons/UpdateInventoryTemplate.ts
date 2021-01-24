@@ -2,9 +2,9 @@ import { buttonStyles, getButtonSizeStyles } from '../styles'
 import { updateInventoryCommandTemplate } from '../../commands'
 import { ButtonSize } from '../../types'
 
-export const UpdateInventoryTemplate = (inventoryHandoutId: string, size: ButtonSize) =>
+export const UpdateInventoryTemplate = (charName: string, size: ButtonSize) =>
   `<a
-  href="${updateInventoryCommandTemplate(inventoryHandoutId)}"
+  href="${updateInventoryCommandTemplate(charName)}"
   style="${buttonStyles}${getButtonSizeStyles(size)}"
 >
   Refresh

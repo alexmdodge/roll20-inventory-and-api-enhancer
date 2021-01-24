@@ -118,6 +118,7 @@ describe('normalizeInventoryMeta', () => {
       },
       totalWeight: '0',
       handoutId: '- MEKD9jf3med -8',
+      characterName: 'Test',
       characterId: ' 0 --Test',
       inventory: [
         {
