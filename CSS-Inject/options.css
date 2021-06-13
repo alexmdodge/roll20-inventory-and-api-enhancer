@@ -1,0 +1,23 @@
+#avatarContainer #macrobar {
+  height: inherit;
+  margin-bottom: 50px;
+}
+
+#macrobar #macrobar_macros {
+  white-space: normal;
+}
+
+#macrobar #macrobar_macros .macrobox {
+  margin-bottom: 5px;
+}
+
+body #playerzone.showmacrobar {
+  padding-bottom: 25px;
+}
+
+#pnlMain #txtOutput {
+  padding: 40px;
+  background-image: url("https://i.pinimg.com/originals/d3/16/79/d31679454369e58a0c34719e3f2e35d2.jpg");
+  background-size: cover;
+  width: 50% !important;
+}
